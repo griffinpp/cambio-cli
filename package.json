@@ -1,0 +1,22 @@
+{
+  "name": "rhinozug",
+  "version": "1.0.0",
+  "description": "Rhinogram's database migration CLI",
+  "main": "rhinozug.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rhinogram",
+  "license": "ISC",
+  "bin": {
+    "rhinozug": "./index.js"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "knex": "^0.11.1",
+    "moment": "^2.13.0",
+    "mysql": "^2.10.2",
+    "objection": "^0.4.0",
+    "umzug": "^1.11.0"
+  }
+}
