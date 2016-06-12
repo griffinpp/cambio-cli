@@ -1,8 +1,8 @@
 'use strict';
 
-let Knex = require('knex');
+import Knex from 'knex';
 
-let knex = {
+export default {
   new(connection) {
     if(connection) {
       return Knex(connection);
@@ -11,5 +11,3 @@ let knex = {
     }
   }
 };
-
-module.exports = knex;

@@ -2,11 +2,12 @@
 
 'use strict';
 
-let Umzug = require('umzug');
-let umzug = new Umzug({storage: 'json'});
-let commander = require('commander');
+import Umzug from 'umzug';
+import commander from 'commander';
+import rz from './rhinozug';
 
-let rz = require('./rhinozug');
+
+let umzug = new Umzug({storage: 'json'});
 
 commander.version('0.0.1');
 commander.command('create:migration [value]')
@@ -23,7 +24,7 @@ commander.command('up [value]')
     });
 
 commander.command('down [value]')
-    .description('revert migrations down to the one specified, or only the most recent if none is specified.')
+    .description('revert migrations down to the one specified, or revert only the most recent if none is specified.')
     .action((command) => {
         rz.down(command);
     });

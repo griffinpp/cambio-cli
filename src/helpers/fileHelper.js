@@ -1,10 +1,10 @@
 'use strict';
 
-let fs = require('fs');
-let moment = require('moment');
-let path = require('path');
+import fs from 'fs';
+import moment from 'moment';
+import path from 'path';
 
-let helpers = {
+export default {
     read(filePath) {
         return fs.readFileSync(filePath).toString();
     },
@@ -111,5 +111,3 @@ let helpers = {
         return this.read(this.getSeedTemplateFilePath());
     }
 };
-
-module.exports = helpers;

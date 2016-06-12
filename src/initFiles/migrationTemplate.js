@@ -3,10 +3,10 @@
 /* See: http://knexjs.org/#Schema-Building
 for documentation of the schema building api in use */
 
-let rz = require('rhinozug');
-let config = require('../config/default.js');
+import rz from 'rhinozug';
+import config from '../config/default.js';
 
-module.exports = {
+export default {
     up: function () {
         // rz.getConnection() returns a knex object
         let connection = rz.getConnection(config);

@@ -1,8 +1,8 @@
 'use strict';
 
-let fileHelpers = require('./helpers/fileHelper');
-let Umzug = require('Umzug');
-let knex = require('./knex.adapter');
+import fileHelpers from './helpers/fileHelper';
+import Umzug from 'Umzug';
+import knex from './knex.adapter';
 
 let migrationUmzug = new Umzug({
     storage: 'json',
@@ -33,7 +33,7 @@ function printList(list) {
     });
 }
 
-module.exports = {
+export default {
     createMigration(name) {
         let migrationName = name ? name : 'unnamed';
         try {

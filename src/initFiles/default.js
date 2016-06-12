@@ -6,7 +6,7 @@ that is accepted by knex, so any of the options available for knex can be set he
 a js file, you can also alter it to bring in config data from process.env or wherever is convenient for
 building the connection information */
 
-module.exports = {
+export default {
     client: 'mysql',
     connection: {
         host: '127.0.0.1',
