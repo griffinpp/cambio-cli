@@ -4,110 +4,112 @@ import fs from 'fs';
 import moment from 'moment';
 import path from 'path';
 
-export default {
-    read(filePath) {
+export function read(filePath) {
         return fs.readFileSync(filePath).toString();
-    },
-    write(targetPath, content) {
+    }
+
+export function write(targetPath, content) {
         fs.writeFileSync(targetPath, content);
-    },
-    makeDir(name) {
+    }
+
+export function makeDir(name) {
         fs.mkdirSync(`./${name}`);
-    },
-    getUmzugDir() {
-        let p = process.cwd().split('/');
-        let newP = [];
-        let rgFound = false;
-        p.map((dir) => {
-            if (!rgFound) {
-                newP.push(dir);
-            }
-            if (dir.toLowerCase() === 'rhinogram') {
-                rgFound = true;
-            }
-        });
-        newP.push('.umzug');
-        return path.normalize(newP.join('/'));
-    },
-    getMigrationsPath() {
+    }
+
+export function getMigrationsPath() {
         return path.normalize('./migrations');
-    },
-    getSeedsPath() {
+    }
+
+export function getSeedsPath() {
         return path.normalize('./seeds');
-    },
-    getInitPath() {
+    }
+
+export function getInitPath() {
         let p = [
             __dirname,
             '..',
             'initFiles'
         ].join('/');
         return path.normalize(p);
-    },
-    getConfigPath() {
+    }
+
+export function getConfigPath() {
         return path.normalize('./config');
-    },
-    getConfigFilePath(filename) {
+    }
+
+export function getConfigFilePath(filename) {
         let p = [
             this.getConfigPath(),
             filename
         ].join('/');
         return path.normalize(p);
-    },
-    getInitFile(filename) {
+    }
+
+export function getInitFile(filename) {
         let p = [
             this.getInitPath(),
             filename
         ].join('/');
         return this.read(p);
-    },
-    getMigrationsStoragePath() {
+    }
+
+export function getMigrationsStoragePath() {
         return path.normalize('./migrations.json');
-    },
-    getSeedsStoragePath() {
+    }
+
+export function getSeedsStoragePath() {
         return path.normalize('./seeds.json');
-    },
-    getCreatedFileName(name) {
+    }
+
+export function getCreatedFileName(name) {
         return [
             moment().utc().format('YYYYMMDDHHmmss'),
             name
         ].join('-');
-    },
-    getCreatedFileExtension() {
+    }
+
+export function getCreatedFileExtension() {
         return 'js';
-    },
-    addFileExtension(name) {
+    }
+
+export function addFileExtension(name) {
         return [name, this.getCreatedFileExtension()].join('.');
-    },
-    getMigrationFilePath(name) {
+    }
+
+export function getMigrationFilePath(name) {
         return [
             this.getMigrationsPath(),
             this.addFileExtension(this.getCreatedFileName(name))
         ].join('/');
-    },
-    getSeedFilePath(name) {
+    }
+
+export function getSeedFilePath(name) {
         return [
             this.getSeedsPath(),
             this.addFileExtension(this.getCreatedFileName(name))
         ].join('/');
-    },
-    getMigrationTemplateFilePath() {
+    }
+
+export function getMigrationTemplateFilePath() {
         let p = [
-            'config',
+            getConfigPath(),
             'migrationTemplate.js'
         ].join('/');
         return path.normalize(p);
-    },
-    getSeedTemplateFilePath() {
+    }
+
+export function getSeedTemplateFilePath() {
         let p = [
-            'config',
+            getConfigPath(),
             'seedTemplate.js'
         ].join('/');
         return path.normalize(p);
-    },
-    getMigrationTemplate() {
+    }
+
+export function getMigrationTemplate() {
         return this.read(this.getMigrationTemplateFilePath());
-    },
-    getSeedTemplate() {
+    }
+
+export function getSeedTemplate() {
         return this.read(this.getSeedTemplateFilePath());
     }
-};

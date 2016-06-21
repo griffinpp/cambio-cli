@@ -1,6 +1,6 @@
 'use strict';
 
-import fileHelpers from './helpers/fileHelper';
+import * as fileHelpers from './helpers/fileHelper';
 import Umzug from 'Umzug';
 import knex from './knex.adapter';
 
