@@ -1,11 +1,12 @@
 {
-  "name": "rhinozug",
-  "version": "1.0.0",
+  "name": "rhinozug-cli",
+  "version": "0.1.0",
   "description": "Rhinogram's database migration CLI",
-  "main": "rhinozug.js",
+  "main": "./lib/rhinozug.js",
+  "preferGlobal": "true",
   "scripts": {
-    "test": "rm -Rf lib && babel src -d lib && mocha lib/tests",
-    "build": "rm -Rf lib && babel src -d lib"
+    "test": "rm -Rf lib && babel src -d lib --copy-files && mocha lib/tests",
+    "build": "rm -Rf lib && babel src -d lib --copy-files"
   },
   "author": "Rhinogram",
   "license": "ISC",
@@ -13,6 +14,7 @@
     "rhinozug": "./lib/index.js"
   },
   "dependencies": {
+    "colors": "^1.1.2",
     "commander": "^2.9.0",
     "knex": "^0.11.1",
     "moment": "^2.13.0",
@@ -24,9 +26,6 @@
     "babel-cli": "^6.10.1",
     "babel-preset-es2015": "^6.9.0",
     "chai": "^3.5.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-mocha": "^2.2.0",
     "mocha": "^2.5.3",
     "proxyquire": "^1.7.9",
     "sinon": "^1.17.4"

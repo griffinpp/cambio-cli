@@ -4,7 +4,7 @@
 
 import Umzug from 'umzug';
 import commander from 'commander';
-import rz from './rhinozug';
+import * as rz from './rhinozug';
 
 
 let umzug = new Umzug({storage: 'json'});

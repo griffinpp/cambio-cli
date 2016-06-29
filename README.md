@@ -1,2 +1,2 @@
-# Rhinozug
-Rhinogram's internal database migration tool
+# Rhinozug-CLI
+Rhinogram's internal database migration tool CLI

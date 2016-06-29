@@ -3,18 +3,18 @@
 /* See: http://knexjs.org/#Schema-Building
 for documentation of the schema building api in use */
 
-import rz from 'rhinozug';
-import config from '../config/default.js';
+let rz = require('rhinozug');
+let config = require('../config/default.js');
 
-export default {
+module.exports = {
     up: function () {
         // rz.getConnection() returns a knex object
         let connection = rz.getConnection(config);
         /*
-        Add altering commands here.
-        Return a promise to correctly handle asynchronicity.
+        // Add altering commands here.
+        // Return a promise to correctly handle asynchronicity.
 
-        Example that creates two tables with a fk between them:
+        // Example that creates two tables with a fk between them:
         return connection.schema.createTableIfNotExists('User', (table) => {
             table.increments('id');
             table.string('name');
@@ -36,10 +36,10 @@ export default {
     down: function () {
         let connection = rz.getConnection(config);
         /*
-        Add reverting commands here.
-        Return a promise to correctly handle asynchronicity.
+        // Add reverting commands here.
+        // Return a promise to correctly handle asynchronicity.
 
-        Example that undoes the commands above:
+        // Example that undoes the commands above:
         return connection.schema.dropTable('Phone')
             .dropTable('User')
             .catch((err) => {

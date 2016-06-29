@@ -3,18 +3,18 @@
 /* See: http://knexjs.org/#Schema-Building
 for documentation of the schema building api in use */
 
-import rz from 'rhinozug';
-import config from '../config/default.js';
+let rz = require('rhinozug');
+let config = require('../config/default.js');
 
-export default {
+module.exports = {
     up: function () {
         // rz.getConnection() returns a knex object
         let connection = rz.getConnection(config);
         /*
-        Add data insertion commands here.
-        Return a promise to correctly handle asynchronicity.
+        // Add data insertion commands here.
+        // Return a promise to correctly handle asynchronicity.
 
-        Example that inserts three rows into the 'User' table created in the migration template:
+        // Example that inserts three rows into the 'User' table created in the migration template:
         return Promise.all([
             connection('User').insert({id: 1, name: 'Aaron', address1: '123 anystreet'}),
             connection('User').insert({id: 2, name: 'Bobby', address1: '456 otherstreet'}),

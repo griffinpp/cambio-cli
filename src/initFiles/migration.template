@@ -3,28 +3,18 @@
 /* See: http://knexjs.org/#Schema-Building
 for documentation of the schema building api in use */
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
+let rz = require('rhinozug');
+let config = require('../config/default.js');
 
-var _rhinozug = require('rhinozug');
-
-var _rhinozug2 = _interopRequireDefault(_rhinozug);
-
-var _default = require('../config/default.js');
-
-var _default2 = _interopRequireDefault(_default);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = {
-    up: function up() {
+module.exports = {
+    up: function () {
         // rz.getConnection() returns a knex object
-        var connection = _rhinozug2.default.getConnection(_default2.default);
+        let connection = rz.getConnection(config);
         /*
-        Add altering commands here.
-        Return a promise to correctly handle asynchronicity.
-         Example that creates two tables with a fk between them:
+        // Add altering commands here.
+        // Return a promise to correctly handle asynchronicity.
+
+        // Example that creates two tables with a fk between them:
         return connection.schema.createTableIfNotExists('User', (table) => {
             table.increments('id');
             table.string('name');
@@ -43,12 +33,13 @@ exports.default = {
         */
     },
 
-    down: function down() {
-        var connection = _rhinozug2.default.getConnection(_default2.default);
+    down: function () {
+        let connection = rz.getConnection(config);
         /*
-        Add reverting commands here.
-        Return a promise to correctly handle asynchronicity.
-         Example that undoes the commands above:
+        // Add reverting commands here.
+        // Return a promise to correctly handle asynchronicity.
+
+        // Example that undoes the commands above:
         return connection.schema.dropTable('Phone')
             .dropTable('User')
             .catch((err) => {
