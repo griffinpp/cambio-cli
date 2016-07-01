@@ -49,6 +49,10 @@ commander.command('create:seed [value]')
         rz.createSeed(command);
     });
 
+commander.command('create:model [name] [tableName]')
+    .description('create a new model file, with a name for the object, and the name of the table that it maps.')
+    .action(rz.createModel);
+
 commander.command('seed')
     .description('run all seed files in alphabetical order')
     .action(() => {

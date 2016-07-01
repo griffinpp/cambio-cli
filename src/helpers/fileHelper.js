@@ -39,6 +39,10 @@ export function getSeedsPath() {
   return path.normalize('./seeds');
 }
 
+export function getModelsPath() {
+  return path.normalize('./models');
+}
+
 export function getInitPath() {
   let p = [
     __dirname,
@@ -83,6 +87,13 @@ export function getCreatedFileName(name) {
   ].join('-');
 }
 
+export function getModelFileName(name) {
+  return [
+    name,
+    'model'
+  ].join('.');
+}
+
 export function getCreatedFileExtension() {
   return 'js';
 }
@@ -105,6 +116,13 @@ export function getSeedFilePath(name) {
   ].join('/');
 }
 
+export function getModelFilePath(name) {
+  return [
+    this.getModelsPath(),
+    this.addFileExtension(this.getModelFileName(name))
+  ].join('/');
+}
+
 export function getMigrationTemplateFilePath() {
   let p = [
     getConfigPath(),
@@ -121,8 +139,20 @@ export function getSeedTemplateFilePath() {
   return path.normalize(p);
 }
 
+export function getModelTemplateFilePath() {
+  let p = [
+    getConfigPath(),
+    'model.template'
+  ].join('/')
+  return path.normalize(p);
+}
+
 export function getMigrationTemplate() {
   return this.read(this.getMigrationTemplateFilePath());
+}
+
+export function getModelTemplate() {
+  return this.read(this.getModelTemplateFilePath());
 }
 
 export function getSeedTemplate() {

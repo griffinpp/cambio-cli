@@ -3,6 +3,7 @@
 /* See: http://knexjs.org/#Schema-Building
 for documentation of the schema building api in use */
 
+// rhinozug should have been installed when the migration folder was initialized
 let rz = require('rhinozug');
 let config = require('../config/default.js');
 

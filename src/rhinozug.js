@@ -138,6 +138,20 @@ export function createSeed(name) {
   }
 }
 
+export function createModel(name, tableName) {
+  try {
+    let filePath = fileHelpers.getModelFilePath(name);
+    let templateText = fileHelpers.getModelTemplate();
+
+    templateText = replace(templateText, '<#modelName>', name);
+    templateText = replace(templateText, '<#tableName>', tableName);
+
+    fileHelpers.write(filePath, templateText);
+  } catch (err) {
+    logger.error(`Error creating model file: ${err}`);
+  }
+}
+
 export function seed() {
   return seedUmzug.up()
     .then(() => {
@@ -153,14 +167,17 @@ export function init() {
     let cDefault = fileHelpers.getInitFile('default.connection');
     let mTemplate = fileHelpers.getInitFile('migration.template');
     let sTemplate = fileHelpers.getInitFile('seed.template');
+    let modelTemplate = fileHelpers.getInitFile('model.template');
 
     fileHelpers.makeDir('config');
     fileHelpers.makeDir('migrations');
     fileHelpers.makeDir('seeds');
+    fileHelpers.makeDir('models');
 
     fileHelpers.write(fileHelpers.getConfigFilePath('default.js'), cDefault);
     fileHelpers.write(fileHelpers.getConfigFilePath('migrationTemplate.js'), mTemplate);
-    fileHelpers.write(fileHelpers.getConfigFilePath('seedTemplate.js'), sTemplate);
+    fileHelpers.write(fileHelpers.getConfigFilePath('seedTemplate.js'), sTemplate)
+    fileHelpers.write(fileHelpers.getConfigFilePath('model.template'), modelTemplate);
 
     logger.log(`Rhinozug successfully initialized in this directory`);
     logger.log('Installing Rhinozug as a local dependency.  Please wait...');
@@ -176,4 +193,8 @@ export function init() {
   } catch (err) {
     logger.error(`Error initializing Rhinozug: ${err}`);
   }
+}
+
+function replace(string, find, replace) {
+  return string.split(find).join(replace);
 }
