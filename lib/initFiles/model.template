@@ -12,17 +12,15 @@ Model.extend(<#modelName>);
 
 <#modelName>.jsonSchema = {
   type: 'object',
-  required: ['type', 'mimeType'],
+  required: [],
 
   properties: {
     id: {type:'integer'},
-    type: {type: 'string'},
-    mimeType: {type: 'string'}
   }
 };
 
-// see http://vincit.github.io/objection.js/#models for example mappings.  to/from should
-// use the /table/ name, not the model name
+/* see http://vincit.github.io/objection.js/#models for example mappings.  to/from should
+   use the /table/ name, not the model name */
 <#modelName>.relationMappings = {
   
 };

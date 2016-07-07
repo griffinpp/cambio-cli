@@ -162,6 +162,16 @@ export function seed() {
     });
 }
 
+export function unseed() {
+  return seedUmzug.down()
+    .then(() => {
+      logger.log(`Latest seed file unseeded`);
+    })
+    .catch((err) => {
+      logger.error(`Error unseeding: ${err}`);
+    })
+}
+
 export function init() {
   try {
     let cDefault = fileHelpers.getInitFile('default.connection');
