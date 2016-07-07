@@ -73,11 +73,11 @@ export function getInitFile(filename) {
 }
 
 export function getMigrationsStoragePath() {
-  return path.normalize('./migrations.json');
+  return path.normalize(`./${process.env.connection}-migrations.json`);
 }
 
 export function getSeedsStoragePath() {
-  return path.normalize('./seeds.json');
+  return path.normalize(`./${process.env.connection}-seeds.json`);
 }
 
 export function getCreatedFileName(name) {

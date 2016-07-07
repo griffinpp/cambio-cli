@@ -13,34 +13,44 @@ commander.version('0.0.1');
 commander.command('create:migration [value]')
   .description('create a new migration file, using an optional name and a timestamp. "unnamed" is used if no name is provided.')
   .action((command) => {
-    // console.log(command);
     rz.createMigration(command);
   });
 
-commander.command('up [value]')
+commander.command('up')
   .description('run migrations up to the one specified, or up to the most recent if none is specified.')
+  .option('-c, --connection <conn>')
+  .option('-t, --to <to>')
   .action((command) => {
-    rz.up(command);
+    rz.up(command.to, command.connection);
   });
 
-commander.command('down [value]')
+commander.command('down')
   .description('revert migrations down to the one specified, or revert only the most recent if none is specified.')
+  .option('-c, --connection <conn>')
+  .option('-t, --to <to>')
   .action((command) => {
-    rz.down(command);
+    rz.down(command.to, command.connection);
   });
 
 commander.command('list')
   .description('list all migrations')
   .option('-p, --pending', 'list only pending migrations')
   .option('-e, --executed', 'list only executed migrations')
+  .option('-c, --connection')
   .action((command) => {
     if (command.pending) {
-      rz.listPending();
+      rz.listPending(command.connection);
     } else if (command.executed) {
-      rz.listExecuted();
+      rz.listExecuted(command.connection);
     } else {
-      rz.listAll();
+      rz.listAll(command.connection);
     }
+  });
+
+commander.command('conns')
+  .description('list all available connections for use with the -c option in other commands')
+  .action((command) => {
+     console.log('PENDING IMPLEMENTATION'); 
   });
 
 commander.command('create:seed [value]')
@@ -55,14 +65,16 @@ commander.command('create:model [name] [tableName]')
 
 commander.command('seed')
   .description('run all seed files in alphabetical order')
-  .action(() => {
-    rz.seed();
+  .option('-c, --connection')
+  .action((command) => {
+    rz.seed(command.connection);
   });
 
 commander.command('unseed')
   .description('unseed the latest seed file')
-  .action(() => {
-    rz.unseed();
+  .option('-c, --connection')
+  .action((command) => {
+    rz.unseed(command.connection);
   });
 
 commander.command('init')

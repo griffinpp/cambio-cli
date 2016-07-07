@@ -5,26 +5,9 @@ import Umzug from 'Umzug';
 import * as logger from './helpers/logger';
 import cp from 'child_process';
 
-let migrationUmzug = new Umzug({
-  storage: 'json',
-  storageOptions: {
-    path: fileHelpers.getMigrationsStoragePath()
-  },
-  migrations: {
-    path: fileHelpers.getMigrationsPath()
-  }
-});
+let migrationUmzug;
 
-let seedUmzug = new Umzug({
-  storage: 'json',
-  storageOptions: {
-    path: fileHelpers.getSeedsStoragePath()
-  },
-  migrations: {
-    path: fileHelpers.getSeedsPath()
-  }
-
-});
+let seedUmzug;
 
 function printList(list) {
   let num = 1;
@@ -45,7 +28,10 @@ export function createMigration(name) {
   }
 }
 
-export function up(to) {
+export function up(to, connection) {
+  setConnection(connection);
+  setMigrationUmzug();
+
   return Promise.resolve()
     .then(() => {
       if (to && to !== null) {
@@ -65,7 +51,10 @@ export function up(to) {
     });
 }
 
-export function down(to) {
+export function down(to, connection) {
+  setConnection(connection);
+  setMigrationUmzug();
+
   return Promise.resolve()
     .then(() => {
       if (to && to !== null) {
@@ -85,7 +74,10 @@ export function down(to) {
     });
 }
 
-export function listExecuted() {
+export function listExecuted(connection) {
+  setConnection(connection);
+  setMigrationUmzug();
+
   migrationUmzug.executed()
     .then((list) => {
       logger.log('Executed Migrations:');
@@ -97,7 +89,10 @@ export function listExecuted() {
     });
 }
 
-export function listPending() {
+export function listPending(connection) {
+  setConnection(connection);
+  setMigrationUmzug();
+
   migrationUmzug.pending()
     .then((list) => {
       logger.log('\nPending Migrations:');
@@ -109,7 +104,10 @@ export function listPending() {
     });
 }
 
-export function listAll() {
+export function listAll(connection) {
+  setConnection(connection);
+  setMigrationUmzug();
+
   migrationUmzug.executed()
     .then((list) => {
       logger.log('Executed Migrations:');
@@ -152,7 +150,10 @@ export function createModel(name, tableName) {
   }
 }
 
-export function seed() {
+export function seed(connection) {
+  setConnection(connection);
+  setSeedUmzug();
+
   return seedUmzug.up()
     .then(() => {
       logger.log(`All seed files successfully run`);
@@ -162,7 +163,10 @@ export function seed() {
     });
 }
 
-export function unseed() {
+export function unseed(connection) {
+  setConnection(connection);
+  setSeedUmzug();
+  
   return seedUmzug.down()
     .then(() => {
       logger.log(`Latest seed file unseeded`);
@@ -207,4 +211,37 @@ export function init() {
 
 function replace(string, find, replace) {
   return string.split(find).join(replace);
+}
+
+function setConnection(connection) {
+  if (connection) {
+    process.env.connection = connection;
+  } else {
+    process.env.connection = 'default';
+  }
+}
+
+function setMigrationUmzug() {
+  migrationUmzug = new Umzug({
+    storage: `${__dirname}/helpers/storage`,
+    storageOptions: {
+      tableName: 'rzMigrations'
+    },
+    migrations: {
+      path: fileHelpers.getMigrationsPath()
+    }
+  });
+}
+
+function setSeedUmzug() {
+  seedUmzug = new Umzug({
+    storage: `${__dirname}/helpers/storage`,
+    storageOptions: {
+      tableName: 'rzSeeds'
+    },
+    migrations: {
+      path: fileHelpers.getSeedsPath()
+    }
+
+  });
 }
