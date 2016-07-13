@@ -115,16 +115,25 @@ export function listAll(connection) {
     })
     .then(printList)
     .then(() => {
-      logger.log('\nPending Migrations:');
+      logger.log('');
+      logger.log('Pending Migrations:');
     })
     .then(() => {
       return migrationUmzug.pending();
     })
     .then(printList)
     .then(() => {
-      logger.log('\n');
+      logger.log('');
     });
 }
+
+export function listConnections() {
+  logger.log('Available Connections (for use with the -c option): ');
+  fileHelpers.getConnections().map((conn, index) => {
+    logger.log(`${index + 1}: ${conn}`);
+  });
+}
+
 export function createSeed(name) {
   let seedName = name ? name : 'unnamed';
   try {
@@ -138,6 +147,15 @@ export function createSeed(name) {
 
 export function createModel(name, tableName) {
   try {
+    if (!name) {
+      throw new Error('You must specify a name for the model');
+    }
+
+    if (!tableName) {
+      tableName = name;
+      logger.warn(`No table name provided. Using model name "${name}" as the table name.  This can be edited in the model file later.`);
+    }
+
     let filePath = fileHelpers.getModelFilePath(name);
     let templateText = fileHelpers.getModelTemplate();
 
@@ -166,7 +184,7 @@ export function seed(connection) {
 export function unseed(connection) {
   setConnection(connection);
   setSeedUmzug();
-  
+
   return seedUmzug.down()
     .then(() => {
       logger.log(`Latest seed file unseeded`);
@@ -189,8 +207,8 @@ export function init() {
     fileHelpers.makeDir('models');
 
     fileHelpers.write(fileHelpers.getConfigFilePath('default.js'), cDefault);
-    fileHelpers.write(fileHelpers.getConfigFilePath('migrationTemplate.js'), mTemplate);
-    fileHelpers.write(fileHelpers.getConfigFilePath('seedTemplate.js'), sTemplate)
+    fileHelpers.write(fileHelpers.getConfigFilePath('migration.template'), mTemplate);
+    fileHelpers.write(fileHelpers.getConfigFilePath('seed.template'), sTemplate)
     fileHelpers.write(fileHelpers.getConfigFilePath('model.template'), modelTemplate);
 
     logger.log(`Rhinozug successfully initialized in this directory`);

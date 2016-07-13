@@ -9,7 +9,11 @@ let error = new Error('derp!');
 let fsStub = {
   readFileSync: sinon.stub().returns('contents'),
   writeFileSync: sinon.stub().returns('ok'),
-  mkdirSync: sinon.stub().returns('ok')
+  mkdirSync: sinon.stub().returns('ok'),
+  readdirSync: sinon.stub(),
+  statSync: sinon.stub().returns({
+    isDirectory: sinon.stub().returns(true)
+  })
 };
 
 let loggerStub = {
@@ -25,7 +29,57 @@ let sut = proxyquire('../helpers/fileHelper',
   }
 );
 
+/* setupReadDirSuccess and setupReadDirFail imagine the following dir structure:
+   package.json
+   /node_modules
+   /src
+     +- /db
+       +- /migrations // assumed not to exist in the failure case
+       +- /config // assumed not to exist in the failure case
+       +- /seeds // assumed not to exist in the failure case
+       +- /models // assumed not to exist in the failure case
+     +- /server
+     +- /client
+   /lib
 
+   Both assume that process.cwd() is the /src folder
+ */
+
+function setupReadDirSuccess() {
+  fsStub.readdirSync.reset();
+  fsStub.readdirSync.onCall(0).returns(['db', 'server', 'client']);
+  fsStub.readdirSync.onCall(1).returns(['node_modules', 'src', 'lib', 'package.json']);
+
+  // at this point, the search for the migrations folder should begin
+  fsStub.readdirSync.onCall(2).returns(['node_modules', 'src', 'lib']);
+  fsStub.readdirSync.onCall(3).returns(['db', 'server', 'client']);
+  fsStub.readdirSync.onCall(4).returns(['migrations', 'config', 'seeds', 'models']);
+  fsStub.readdirSync.returns([]);
+}
+
+function setupReadDirFail() {
+  fsStub.readdirSync.reset();
+  fsStub.readdirSync.onCall(0).returns(['db', 'server', 'client']);
+  fsStub.readdirSync.onCall(1).returns(['node_modules', 'src', 'lib', 'package.json']);
+
+  // now the search for the migrations folder begins
+  fsStub.readdirSync.onCall(2).returns(['node_modules', 'src', 'lib']);
+  fsStub.readdirSync.onCall(3).returns(['db', 'server', 'client']);
+  // be sure to overwrite behavior for the fourth call, or it will remain in place
+  fsStub.readdirSync.onCall(4).returns([]);
+
+  // no more subdirectories in the directory tree, i.e. there is no "migrations" dir
+  fsStub.readdirSync.returns([]);
+}
+
+function setupNoPackage() {
+  fsStub.readdirSync = sinon.stub();
+  fsStub.readdirSync.onCall(0).returns(['db', 'server', 'client']);
+  fsStub.readdirSync.onCall(1).returns(['src', 'lib']);
+  fsStub.readdirSync.onCall(2).returns(['testProject']);
+  fsStub.readdirSync.onCall(3).returns(['repos']);
+  fsStub.readdirSync.onCall(4).returns(['user']);
+}
 
 describe('fileHelper module', () => {
 
@@ -33,6 +87,38 @@ describe('fileHelper module', () => {
     loggerStub.log.reset();
     loggerStub.warning.reset();
     loggerStub.error.reset();
+
+    setupReadDirSuccess();
+  });
+
+  describe('.getDbDir', () => {
+    describe('when a package.json is found in the project', () => {
+      describe('when rhinozug has been initialized in the project', () => {
+        beforeEach(setupReadDirSuccess);
+
+        it('should return the directory where rhinozug was initialized', () => {
+          let result = sut.getDbDir();
+
+          // package.json is not "found" in the first call to fs.readdirSync, so it should go down a level
+          expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db'].join('/')));
+        });
+      });
+
+      describe('when rhinozug has not been initialized in the project', () => {
+        beforeEach(setupReadDirFail);
+
+        it('should throw an error', () => {
+          expect(sut.getDbDir.bind(sut)).to.throw;
+        });
+      });
+    });
+    describe('when the project has no package.json', () => {
+      beforeEach(setupNoPackage);
+
+      it('should throw an error', () => {
+        expect(sut.getDbDir.bind(sut)).to.throw;
+      });
+    });
   });
 
   describe('.read()', () => {
@@ -105,16 +191,16 @@ describe('fileHelper module', () => {
   });
 
   describe('.getMigrationsPath()', () => {
-      it('should return a path to the "./migrations" directory from the current working directory', () => {
+      it('should return a path to the "migrations" directory in the directory where "rhinozug init" was called', () => {
           let result = sut.getMigrationsPath();
-          expect(result).to.equal('migrations');
+          expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','migrations'].join('/')));
       });
   });
 
   describe('.getSeedsPath()', () => {
     it('should return a path to the "./seeds" directory from the current working directory', () => {
         let result = sut.getSeedsPath();
-        expect(result).to.equal('seeds');
+        expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','seeds'].join('/')));
     });
   });
 
@@ -130,14 +216,14 @@ describe('fileHelper module', () => {
   describe('.getConfigPath()', () => {
     it('should return a path to the "./config" directory from the current working directory', () => {
         let result = sut.getConfigPath();
-        expect(result).to.equal('config');
+        expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config'].join('/')));
     });
   });
 
   describe('.getConfigFilePath()', () => {
     it('should return a path to the specified file in the "./config" directory', () => {
         let result = sut.getConfigFilePath('fake.js');
-        expect(result).to.equal('config/fake.js');
+        expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','fake.js'].join('/')));
     });
   });
 
@@ -147,20 +233,6 @@ describe('fileHelper module', () => {
         let expectedPath = path.normalize([__dirname,'..', 'initFiles', 'fake.js'].join('/'));
         expect(fsStub.readFileSync.calledWith(expectedPath)).to.be.true;
         expect(result).to.equal('contents');
-    });
-  });
-
-  describe('.getMigrationsStoragePath()', () => {
-    it('should return a path to the migrations.json file in the current working directory', () => {
-          let result = sut.getMigrationsStoragePath();
-          expect(result).to.equal('migrations.json');
-      });  
-  });
-
-  describe('.getSeedsStoragePath()', () => {
-    it('should return a path to the seeds.json file in the current working directory', () => {
-        let result = sut.getSeedsStoragePath();
-        expect(result).to.equal('seeds.json');
     });
   });
 
@@ -204,7 +276,7 @@ describe('fileHelper module', () => {
 
     it('should return a path to a new migration file based on the name passed', () => {
       let result = sut.getMigrationFilePath('new');
-      expect(result).to.equal('migrations/20160101-new.js');
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','migrations','20160101-new.js'].join('/')));
     });
 
     after(() => {
@@ -221,7 +293,7 @@ describe('fileHelper module', () => {
 
     it('should return a path to a new seed file based on the name passed', () => {
       let result = sut.getSeedFilePath('new');
-      expect(result).to.equal('seeds/20160101-new.js');
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','seeds','20160101-new.js'].join('/')));
     });
     
     after(() => {
@@ -232,21 +304,21 @@ describe('fileHelper module', () => {
   describe('.getmigrationTemplateFilePath()', () => {
     it('should return a path to the migration template file', () => {
       let result = sut.getMigrationTemplateFilePath();
-      expect(result).to.equal('config/migrationTemplate.js');
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','migration.template'].join('/')));
     });
   });
 
   describe('.getSeedTemplateFilePath()', () => {
     it('should return a path to the seed template file', () => {
       let result = sut.getSeedTemplateFilePath();
-      expect(result).to.equal('config/seedTemplate.js');
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','seed.template'].join('/')));
     });
   });
 
   describe('.getMigrationTemplate()', () => {
     it('should return a string with the contents of the migration template', () => {
       let result = sut.getMigrationTemplate();
-      expect(fsStub.readFileSync.calledWith('config/migrationTemplate.js')).to.be.true;
+      expect(fsStub.readFileSync.calledWith(path.normalize([process.cwd(), '..', 'src','db','config','migration.template'].join('/')))).to.be.true;
       expect(result).to.equal('contents');
     });
   });
@@ -254,7 +326,7 @@ describe('fileHelper module', () => {
   describe('.getSeedTemplate', () => {
     it('should return a string with the contents of the seed template', () => {
       let result = sut.getSeedTemplate();
-      expect(fsStub.readFileSync.calledWith('config/seedTemplate.js')).to.be.true;
+      expect(fsStub.readFileSync.calledWith(path.normalize([process.cwd(), '..', 'src','db','config','seed.template'].join('/')))).to.be.true;
       expect(result).to.equal('contents');
     });
   });

@@ -31,18 +31,121 @@ export function makeDir(name) {
   }
 }
 
+// finds the folder that rz was init-ed into by searching for the directory containing the directories created by the init process. Don't look in directories named 'lib' or '.tmp'
+export function getDbDir() {
+  let rootDir = getRootDir(process.cwd());
+  let dbDir = findDir(rootDir, ['config','migrations','seeds','models'], ['lib', '.tmp']);
+
+  if (dbDir === null) {
+    throw new Error('Unable to find the folder where rhinozug was initialized in this project.  You may need to initialize rhinozug by running "rhinozug init" in a new folder in the project.');
+  }
+
+  return dbDir;
+
+  // finds the project root directory by searching recursively for the package.json file
+  function getRootDir(dir) {
+
+    // we've recursed to the root dir without finding a package.json
+    if (dir === '/') {
+      throw new Error('No package.json could be found for this project.  You may need to run "npm init" in the root directory of the project, or create package.json manually.')
+    }
+
+    let packageFound = false;
+    fs.readdirSync(dir).map((file) => {
+      if (file === 'package.json') {
+        packageFound = true;
+      }
+    });
+
+    if (packageFound) {
+      return dir;
+    } else {
+      return getRootDir(path.normalize([
+          dir,
+          '..'
+        ].join('/')));
+    }
+  }
+
+  // finds a directory containing the subdirectories named in search by searching recursively through subdirectories.  Must be an exact match, case sensitive
+  function findDir(startDir, searchNames, ignoreDirNames) {
+    // never look in these dirs
+    ignoreDirNames.push('node_modules');
+    ignoreDirNames.push('.git');
+    ignoreDirNames.push('.bin');
+
+    let result = null;
+
+    searchDir(startDir);
+
+    return result;
+
+    // get a list of all directories in a directory
+    function getDirList(dir) {
+      return fs.readdirSync(dir).filter((file) => {
+        return fs.statSync(path.join(dir, file)).isDirectory();
+      }).filter((dir) => {
+        return ignoreDirNames.indexOf(dir) === -1;
+      });
+    }
+
+    // does a depth-first search for dirs with a name matching the search term
+    function searchDir(dir) {
+      let subDirs = getDirList(dir);
+
+      // this will ensure that found is false if there are no subdirectories
+      let found = subDirs.length > 0;
+
+      subDirs.map((subDir) => {
+        found = found && searchNames.indexOf(subDir) !== -1;
+      });
+
+      // if found is still true, every search item was found in this directory
+      if (found) {
+        result = dir;
+      // otherwise, continue searching into the subdirectories
+      } else {
+        subDirs.map((subDir) => {
+          searchDir(path.join(dir, subDir)); 
+        });
+      }
+    }
+  }
+}
+
+function getDbSubdir(dirName) {
+  let p = [
+    getDbDir(),
+    dirName
+  ].join('/');
+  return path.normalize(p);
+}
+
 export function getMigrationsPath() {
-  return path.normalize('./migrations');
+  return getDbSubdir('migrations');
 }
 
 export function getSeedsPath() {
-  return path.normalize('./seeds');
+  return getDbSubdir('seeds');
 }
 
 export function getModelsPath() {
-  return path.normalize('./models');
+  return getDbSubdir('models');
 }
 
+export function getConfigPath() {
+  return getDbSubdir('config');
+}
+
+export function getConnections() {
+  return fs.readdirSync(getConfigPath()).filter((file) => {
+    return(file.indexOf('.template') === -1);
+  }).map((file) => {
+    return file.replace('.js', '');
+  });
+}
+
+// initFiles is a directory in this project, not the target project, so use __dirname
 export function getInitPath() {
   let p = [
     __dirname,
@@ -52,13 +155,9 @@ export function getInitPath() {
   return path.normalize(p);
 }
 
-export function getConfigPath() {
-  return path.normalize('./config');
-}
-
 export function getConfigFilePath(filename) {
   let p = [
-    this.getConfigPath(),
+    getConfigPath(),
     filename
   ].join('/');
   return path.normalize(p);
@@ -66,18 +165,10 @@ export function getConfigFilePath(filename) {
 
 export function getInitFile(filename) {
   let p = [
-    this.getInitPath(),
+    getInitPath(),
     filename
   ].join('/');
-  return this.read(p);
-}
-
-export function getMigrationsStoragePath() {
-  return path.normalize(`./${process.env.connection}-migrations.json`);
-}
-
-export function getSeedsStoragePath() {
-  return path.normalize(`./${process.env.connection}-seeds.json`);
+  return read(p);
 }
 
 export function getCreatedFileName(name) {
@@ -99,34 +190,34 @@ export function getCreatedFileExtension() {
 }
 
 export function addFileExtension(name) {
-  return [name, this.getCreatedFileExtension()].join('.');
+  return [name, getCreatedFileExtension()].join('.');
 }
 
 export function getMigrationFilePath(name) {
   return [
-    this.getMigrationsPath(),
-    this.addFileExtension(this.getCreatedFileName(name))
+    getMigrationsPath(),
+    addFileExtension(getCreatedFileName(name))
   ].join('/');
 }
 
 export function getSeedFilePath(name) {
   return [
-    this.getSeedsPath(),
-    this.addFileExtension(this.getCreatedFileName(name))
+    getSeedsPath(),
+    addFileExtension(getCreatedFileName(name))
   ].join('/');
 }
 
 export function getModelFilePath(name) {
   return [
-    this.getModelsPath(),
-    this.addFileExtension(this.getModelFileName(name))
+    getModelsPath(),
+    addFileExtension(getModelFileName(name))
   ].join('/');
 }
 
 export function getMigrationTemplateFilePath() {
   let p = [
     getConfigPath(),
-    'migrationTemplate.js'
+    'migration.template'
   ].join('/');
   return path.normalize(p);
 }
@@ -134,7 +225,7 @@ export function getMigrationTemplateFilePath() {
 export function getSeedTemplateFilePath() {
   let p = [
     getConfigPath(),
-    'seedTemplate.js'
+    'seed.template'
   ].join('/');
   return path.normalize(p);
 }
@@ -143,18 +234,18 @@ export function getModelTemplateFilePath() {
   let p = [
     getConfigPath(),
     'model.template'
-  ].join('/')
+  ].join('/');
   return path.normalize(p);
 }
 
 export function getMigrationTemplate() {
-  return this.read(this.getMigrationTemplateFilePath());
+  return read(getMigrationTemplateFilePath());
 }
 
 export function getModelTemplate() {
-  return this.read(this.getModelTemplateFilePath());
+  return read(getModelTemplateFilePath());
 }
 
 export function getSeedTemplate() {
-  return this.read(this.getSeedTemplateFilePath());
+  return read(getSeedTemplateFilePath());
 }

@@ -2,14 +2,12 @@
 
 import redefine from 'redefine';
 import * as rz from 'rhinozug';
-import _ from 'lodash';
 
 // dynamically require some modules that should be in the host project
 let fileHelpers = require(`${__dirname}/fileHelper`);
 
 //get the requested connection information that should also be in the host project
-let config = require(`${process.cwd()}/${fileHelpers.getConfigFilePath()}${process.env.connection}.js`);
-
+let config = require(`${fileHelpers.getConfigFilePath()}${process.env.connection}.js`);
 
 module.exports = redefine.Class({
   constructor: function (options) {

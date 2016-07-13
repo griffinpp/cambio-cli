@@ -34,9 +34,9 @@ commander.command('down')
 
 commander.command('list')
   .description('list all migrations')
-  .option('-p, --pending', 'list only pending migrations')
-  .option('-e, --executed', 'list only executed migrations')
-  .option('-c, --connection')
+  .option('-p, --pending <pend>', 'list only pending migrations')
+  .option('-e, --executed <exec>', 'list only executed migrations')
+  .option('-c, --connection <conn>')
   .action((command) => {
     if (command.pending) {
       rz.listPending(command.connection);
@@ -50,7 +50,7 @@ commander.command('list')
 commander.command('conns')
   .description('list all available connections for use with the -c option in other commands')
   .action((command) => {
-     console.log('PENDING IMPLEMENTATION'); 
+     rz.listConnections();
   });
 
 commander.command('create:seed [value]')
@@ -65,14 +65,14 @@ commander.command('create:model [name] [tableName]')
 
 commander.command('seed')
   .description('run all seed files in alphabetical order')
-  .option('-c, --connection')
+  .option('-c, --connection <conn>')
   .action((command) => {
     rz.seed(command.connection);
   });
 
 commander.command('unseed')
   .description('unseed the latest seed file')
-  .option('-c, --connection')
+  .option('-c, --connection <conn>')
   .action((command) => {
     rz.unseed(command.connection);
   });
