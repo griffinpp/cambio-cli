@@ -115,7 +115,7 @@ commander.command('create:conn')
       type: 'boolean',
       description: 'Pool connections? (T/F)',
       message: 'This field is required, and must be either T or F',
-      required: true,
+      default: true,
     },
     {
       name: 'poolMin',

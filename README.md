@@ -118,11 +118,34 @@ While most seeds will not have a "down" portion, as this is generally time consu
 
 Seeds are tracked in the same way as migrations, except in a table named `rzSeeds`.  In this way, every database is aware of its own status.
 
-##  Specifying connections
+## Creating new connections for use
 
-Many Rhinozug commands can specify a connection to change which database the command is executed against.  Rhinozug is initialized with a default connection, defined in `config/default.js`.  This file simply exports a knex connection object.  To add another connection for Rhinozug to use, simply create another `.js` file in the `config` directory that exports a knex connection object.  For now, Rhinozug supports MySql connections. 
+Connections are simply `.js` files in the `config` folder that export knex connection objects.  `default.js` is provided upon initialization and is used when no connection information is provided to a command.  New connections can be created manually by creating new files that export knex connection objects, but it is generally simpler to use Rhinozug to automatically generate a new connection for you.  Start generating a new connection with:
 
-To use another connection, use the `-c` option with a command, and specify the filename of the connection file, without the `.js` portion.  For example, if you had added a second connection file to `config` called `staging.js`, you could run all migrations up on that database with:
+    rz create:conn
+
+This will begin prompting for the following information:
+
+- The name of the connection
+- The host address of the server
+- The port that MySql is running on on the server (default is 3306)
+- The database to connect to
+- The username to connect with
+- The password to connect with
+- Whether this is an AWS database, in which case it will use a special ssl setting that knex makes available
+- Whether to use a connection pool (default is true)
+- If using a connection pool, minimum pool size (default is 2)
+- If using a connection pool, maximum pool size (default is 10)
+
+Once this information is collected, a new connection file will be created in the `config` folder with the specified information.  This file can be edited further if necessary.  For now, Rhinozug supports MySql connections. 
+
+This connection file can also be `import`ed and used anywhere a knex connection is required, including the Objection.js ORM, once it has been created.
+
+## Specifying connections for rhinozug commands
+
+Many Rhinozug commands can specify a connection to change which database the command is executed against. Rhinozug is initialized with a default connection, defined in `config/default.js`, which is used if no connection is specified.
+
+To use something other than the default connection, use the `-c` option with a command, and specify the name of the connection.  For example, if you had created a connection named "staging", you could run all migrations up on that database with:
 
     rz up -c staging
 
