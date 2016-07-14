@@ -9,6 +9,7 @@ let fhStub = {
   getSeedsPath: sinon.stub().returns('/user/repos/testProject/db/seeds'),
   getMigrationTemplate: sinon.stub().returns('migration template contents'),
   getModelTemplate: sinon.stub().returns('<#modelName>:<#tableName>'),
+  getConnTemplate: sinon.stub().returns('<#host>:<#port>:<#database>:<#user>:<#password>:<#ssl>:<#pool>'),
   getSeedTemplate: sinon.stub().returns('seed template contents'),
   getMigrationFilePath: (name) => {
     return `migration/20160101-${name}.js`;
@@ -21,6 +22,9 @@ let fhStub = {
   },
   getModelFilePath: (name) => {
     return `model/${name}.model.js`;
+  },
+  getConnFilePath: (name) => {
+    return `config/${name}.js`;
   },
   getInitFile: sinon.stub().returns('init file contents'),
   read: sinon.stub().returns('fake contents'),
@@ -278,6 +282,85 @@ describe('rhinozug module', () => {
 
       it('should log the error', () => {
         sut.createModel('Item', 'Items');
+        expect(loggerStub.error.called).to.be.true;
+      });
+
+      afterEach(() => {
+        fhStub.write = sinon.stub(); 
+      });        
+    });
+  });
+
+  describe('.createConn()', () => {
+    let info = {
+      name: 'Test',
+      host: 'localhost',
+      port: 1234,
+      user: 'root',
+      password: '',
+      database: 'Test',
+      aws: false,
+      pool: false
+    }
+
+    describe('when there is not an error', () => {
+      it('should log the creation of the model', () => {
+        sut.createConn(info);
+        expect(loggerStub.log.called).to.be.true;
+      });
+
+      it('should use the name provided as the connection name', () => {
+        sut.createConn(info);
+        expect(fhStub.write.calledWith('config/Test.js')).to.be.true;
+      });
+
+      it('should insert the provided data into the appropriate places in the template', () => {
+        sut.createConn(info);
+        expect(fhStub.write.firstCall.args[1]).to.equal('localhost:1234:Test:root:::');
+      });
+
+      describe('when an AWS connection is specified', () => {
+        before(() => {
+          fhStub.write.reset();
+          info.aws = true;
+        });
+
+        it('should specify an ssl connection of type Amazon RDS', () => {
+          sut.createConn(info);
+          expect(fhStub.write.firstCall.args[1]).to.equal(`localhost:1234:Test:root::ssl: 'Amazon RDS',:`);
+        });
+
+        after(() => {
+          info.aws = false;
+        });
+      });
+
+      describe('when a connection pool is specified', () => {
+        before(() => {
+          fhStub.write.reset();
+          info.pool = true;
+          info.poolMin = 3;
+          info.poolMax = 13;
+        });
+
+        it('should specify the pool information using the max and min provided', () => {
+          sut.createConn(info);
+          expect(fhStub.write.firstCall.args[1]).to.equal('localhost:1234:Test:root:::pool: { min: 3, max: 13 },');
+        });
+
+        after(() => {
+          info.pool = false;
+        })
+      });
+    });
+
+    describe('when there is an error', () => {
+      beforeEach(() => {
+        fhStub.write.throws(error);
+      });
+
+      it('should log the error', () => {
+        sut.createConn('Item', 'Items');
         expect(loggerStub.error.called).to.be.true;
       });
 

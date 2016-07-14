@@ -214,6 +214,13 @@ export function getModelFilePath(name) {
   ].join('/');
 }
 
+export function getConnFilePath(name) {
+  return [
+    getConfigPath(),
+    addFileExtension(name)
+  ].join('/');
+}
+
 export function getMigrationTemplateFilePath() {
   let p = [
     getConfigPath(),
@@ -238,6 +245,14 @@ export function getModelTemplateFilePath() {
   return path.normalize(p);
 }
 
+export function getConnTemplateFilePath() {
+  let p = [
+    getConfigPath(),
+    'connection.template'
+  ].join('/');
+  return path.normalize(p);
+}
+
 export function getMigrationTemplate() {
   return read(getMigrationTemplateFilePath());
 }
@@ -248,4 +263,8 @@ export function getModelTemplate() {
 
 export function getSeedTemplate() {
   return read(getSeedTemplateFilePath());
+}
+
+export function getConnTemplate() {
+  return read(getConnTemplateFilePath());
 }

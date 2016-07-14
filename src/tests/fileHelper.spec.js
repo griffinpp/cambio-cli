@@ -253,6 +253,13 @@ describe('fileHelper module', () => {
     });
   });
 
+  describe('.getModelFileName', () => {
+    it('should append ".model" to the provided name', () => {
+      let result = sut.getModelFileName('Fake');
+      expect(result).to.equal('Fake.model');
+    });
+  });
+
   describe('.getCreatedFileExtension()', () => {
     it('should return the string "js"', () => {
         let result = sut.getCreatedFileExtension();
@@ -301,6 +308,20 @@ describe('fileHelper module', () => {
     });
   });
 
+  describe('.getModelFilePath()', () => {
+    it('should return a path to the new model file based on the name passed', () => {
+      let result = sut.getModelFilePath('New');
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','models','New.model.js'].join('/')));
+    });
+  });
+
+  describe('.getConnFilePath()', () => {
+    it('should return a path to the new connection file based on the name passed', () => {
+      let result = sut.getConnFilePath('new');
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','new.js'].join('/')));
+    });
+  });
+
   describe('.getmigrationTemplateFilePath()', () => {
     it('should return a path to the migration template file', () => {
       let result = sut.getMigrationTemplateFilePath();
@@ -312,6 +333,20 @@ describe('fileHelper module', () => {
     it('should return a path to the seed template file', () => {
       let result = sut.getSeedTemplateFilePath();
       expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','seed.template'].join('/')));
+    });
+  });
+
+  describe('.getModelTemplateFilePath()', () => {
+    it('should return a path to the model template file', () => {
+      let result = sut.getModelTemplateFilePath();
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','model.template'].join('/')));
+    });
+  });
+
+  describe('.getConnTemplateFilePath()', () => {
+    it('should return a path to the connection template file', () => {
+      let result = sut.getConnTemplateFilePath();
+      expect(result).to.equal(path.normalize([process.cwd(), '..', 'src','db','config','connection.template'].join('/')));
     });
   });
 
@@ -327,6 +362,22 @@ describe('fileHelper module', () => {
     it('should return a string with the contents of the seed template', () => {
       let result = sut.getSeedTemplate();
       expect(fsStub.readFileSync.calledWith(path.normalize([process.cwd(), '..', 'src','db','config','seed.template'].join('/')))).to.be.true;
+      expect(result).to.equal('contents');
+    });
+  });
+
+  describe('.getModelTemplate', () => {
+    it('should return a string with the contents of the seed template', () => {
+      let result = sut.getModelTemplate();
+      expect(fsStub.readFileSync.calledWith(path.normalize([process.cwd(), '..', 'src','db','config','model.template'].join('/')))).to.be.true;
+      expect(result).to.equal('contents');
+    });
+  });
+
+  describe('.getConnTemplate', () => {
+    it('should return a string with the contents of the seed template', () => {
+      let result = sut.getConnTemplate();
+      expect(fsStub.readFileSync.calledWith(path.normalize([process.cwd(), '..', 'src','db','config','connection.template'].join('/')))).to.be.true;
       expect(result).to.equal('contents');
     });
   });

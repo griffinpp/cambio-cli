@@ -4,6 +4,7 @@
 
 import Umzug from 'umzug';
 import commander from 'commander';
+import prompt from 'prompt';
 import * as rz from './rhinozug';
 
 
@@ -50,7 +51,95 @@ commander.command('list')
 commander.command('conns')
   .description('list all available connections for use with the -c option in other commands')
   .action((command) => {
-     rz.listConnections();
+    rz.listConnections();
+  });
+
+commander.command('create:conn')
+  .description('create a new connection file')
+  .action((command) => {
+    prompt.start();
+
+    prompt.get([
+    {
+      name: 'name',
+      type: 'string',
+      description: 'Connection name',
+      message: 'Connection name is required',
+      required: true
+    },
+    {
+      name: 'host',
+      type: 'string',
+      description: 'Host address',
+      message: 'Host address is required',
+      required: true
+    },
+    {
+      name: 'port',
+      type: 'integer',
+      description: 'Host port',
+      message: 'Host port must be a positive integer',
+      default: 3306
+    },
+    {
+      name: 'database',
+      type: 'string',
+      description: 'Database name',
+      message: 'Database name is required',
+      required: true
+    },
+    {
+      name: 'aws',
+      type: 'boolean',
+      description: 'Is this an AWS database? (T/F)',
+      message: 'This field is required, and must be either T or F',
+      required: true
+    },
+    {
+      name: 'user',
+      type: 'string',
+      description: 'User name to log into the database',
+      message: 'User name is required',
+      required: true
+    },
+    {
+      name: 'password',
+      type: 'string',
+      description: 'Password',
+      default: '',
+      hidden: true,
+      replace: '*',
+    },
+    {
+      name: 'pool',
+      type: 'boolean',
+      description: 'Pool connections? (T/F)',
+      message: 'This field is required, and must be either T or F',
+      required: true,
+    },
+    {
+      name: 'poolMin',
+      type: 'integer',
+      description: 'Minimum pool size',
+      ask: () => {
+        return prompt.history('pool').value;
+      },
+      default: 2,
+      required: false
+    },
+    {
+      name: 'poolMax',
+      type: 'integer',
+      description: 'Maximum pool size',
+      ask: () => {
+        return prompt.history('pool').value;
+      },
+      default: 10,
+      required: false
+    }
+    ], (err, result) => {
+      rz.createConn(result);
+    });
   });
 
 commander.command('create:seed [value]')

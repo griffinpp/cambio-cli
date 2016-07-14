@@ -153,7 +153,7 @@ export function createModel(name, tableName) {
 
     if (!tableName) {
       tableName = name;
-      logger.warn(`No table name provided. Using model name "${name}" as the table name.  This can be edited in the model file later.`);
+      logger.warn(`No table name provided. Using model name "${name}" as the table name. This can be edited in the model file later.`);
     }
 
     let filePath = fileHelpers.getModelFilePath(name);
@@ -165,6 +165,40 @@ export function createModel(name, tableName) {
     fileHelpers.write(filePath, templateText);
   } catch (err) {
     logger.error(`Error creating model file: ${err}`);
+  }
+}
+
+export function createConn(connInfo) {
+  try {
+    let filePath = fileHelpers.getConnFilePath(connInfo.name);
+    let templateText = fileHelpers.getConnTemplate();
+
+    
+
+    templateText = replace(templateText, '<#host>', connInfo.host);
+    templateText = replace(templateText, '<#port>', connInfo.port);
+    templateText = replace(templateText, '<#user>', connInfo.user);
+    templateText = replace(templateText, '<#password>', connInfo.password);
+    templateText = replace(templateText, '<#database>', connInfo.database);
+
+    if (connInfo.aws) {
+      templateText = replace(templateText, '<#ssl>', `ssl: 'Amazon RDS',`);
+    } else {
+      templateText = replace(templateText, '<#ssl>', '');
+    }
+
+    if (connInfo.pool) {
+      connInfo.poolMin = connInfo.poolMin || 2;
+      connInfo.poolMax = connInfo.poolMax || 10;
+      templateText = replace(templateText, '<#pool>', `pool: { min: ${connInfo.poolMin}, max: ${connInfo.poolMax} },`);
+    } else {
+      templateText = replace(templateText, '<#pool>', '');
+    }
+
+    fileHelpers.write(filePath, templateText);
+    logger.log(`New connection file ${filePath} successfully created`);
+  } catch (err) {
+    logger.error(`Error creating connection: ${err}`);
   }
 }
 
