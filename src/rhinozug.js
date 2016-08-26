@@ -1,7 +1,7 @@
 'use strict';
 
 import * as fileHelpers from './helpers/fileHelper';
-import Umzug from 'Umzug';
+import Umzug from 'umzug';
 import * as logger from './helpers/logger';
 import cp from 'child_process';
 
