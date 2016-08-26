@@ -304,7 +304,7 @@ describe('rhinozug module', () => {
     }
 
     describe('when there is not an error', () => {
-      it('should log the creation of the model', () => {
+      it('should log the creation of the connection', () => {
         sut.createConn(info);
         expect(loggerStub.log.called).to.be.true;
       });

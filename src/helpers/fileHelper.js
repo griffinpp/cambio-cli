@@ -96,8 +96,8 @@ export function getDbDir() {
       // this will ensure that found is false if there are no subdirectories
       let found = subDirs.length > 0;
 
-      subDirs.map((subDir) => {
-        found = found && searchNames.indexOf(subDir) !== -1;
+      searchNames.map((searchName) => {
+        found = found && subDirs.indexOf(searchName) !== -1;
       });
 
       // if found is still true, every search item was found in this directory

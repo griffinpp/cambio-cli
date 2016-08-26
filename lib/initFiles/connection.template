@@ -14,7 +14,8 @@ module.exports = {
         <#ssl>
         user: '<#user>',
         password: '<#password>',
-        database: '<#database>'
+        database: '<#database>',
+        charset: 'utf8mb4',
     },
     <#pool>
 };
