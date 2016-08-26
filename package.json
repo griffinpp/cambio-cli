@@ -1,6 +1,6 @@
 {
   "name": "rhinozug-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Rhinogram's database migration CLI",
   "main": "lib/rhinozug.js",
   "preferGlobal": "true",
