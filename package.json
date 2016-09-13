@@ -1,6 +1,6 @@
 {
   "name": "rhinozug-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Rhinogram's database migration CLI",
   "main": "lib/rhinozug.js",
   "preferGlobal": "true",
@@ -17,7 +17,7 @@
   "dependencies": {
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "knex": "^0.11.1",
+    "knex": ">= 0.8.0 <= 0.11.7",
     "moment": "^2.13.0",
     "mysql": "^2.10.2",
     "prompt": "^1.0.0",
