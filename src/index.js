@@ -7,8 +7,6 @@ import commander from 'commander';
 import prompt from 'prompt';
 import * as rz from 'rhinozug';
 
-console.log(rz);
-
 let umzug = new Umzug({storage: 'json'});
 
 commander.version('0.0.1');
