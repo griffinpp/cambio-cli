@@ -127,6 +127,59 @@ export function listAll(connection) {
     });
 }
 
+export function listExecutedSeeds(connection) {
+  setConnection(connection);
+  setSeedUmzug();
+
+  seedUmzug.executed()
+    .then((list) => {
+      logger.log('Applied Seeds:');
+      return list;
+    })
+    .then(printList)
+    .then(() => {
+      logger.log('\n');
+    });
+}
+
+export function listPendingSeeds(connection) {
+  setConnection(connection);
+  setSeedUmzug();
+
+  seedUmzug.pending()
+    .then((list) => {
+      logger.log('\nUnapplied Seeds:');
+      return list
+    })
+    .then(printList)
+    .then(() => {
+      logger.log('\n');
+    });
+}
+
+export function listAllSeeds(connection) {
+  setConnection(connection);
+  setSeedUmzug();
+
+  seedUmzug.executed()
+    .then((list) => {
+      logger.log('Applied Seeds:');
+      return list;
+    })
+    .then(printList)
+    .then(() => {
+      logger.log('');
+      logger.log('Unapplied Seeds:');
+    })
+    .then(() => {
+      return seedUmzug.pending();
+    })
+    .then(printList)
+    .then(() => {
+      logger.log('');
+    });
+}
+
 export function listConnections() {
   logger.log('Available Connections (for use with the -c option): ');
   fileHelpers.getConnections().map((conn, index) => {
@@ -202,26 +255,26 @@ export function createConn(connInfo) {
   }
 }
 
-export function seed(connection) {
+export function seed(file, connection) {
   setConnection(connection);
   setSeedUmzug();
 
-  return seedUmzug.up()
+  return seedUmzug.up(file)
     .then(() => {
-      logger.log(`All seed files successfully run`);
+      logger.log(`${file} successfully seeded`);
     })
     .catch((err) => {
       logger.error(`Error seeding the database: ${err}`);
     });
 }
 
-export function unseed(connection) {
+export function unseed(file, connection) {
   setConnection(connection);
   setSeedUmzug();
 
-  return seedUmzug.down()
+  return seedUmzug.down(file)
     .then(() => {
-      logger.log(`Latest seed file unseeded`);
+      logger.log(`${file} unseeded`);
     })
     .catch((err) => {
       logger.error(`Error unseeding: ${err}`);

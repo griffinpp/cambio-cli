@@ -57,13 +57,14 @@ let loggerStub = {
 
 let sut = proxyquire('../rhinozug', {
   './helpers/fileHelper': fhStub,
-  'Umzug': umzugStub,
+  'umzug': umzugStub,
   'child_process': cpStub,
   './helpers/logger': loggerStub
 });
 
 describe('rhinozug module', () => {
   beforeEach(() => {
+
     loggerStub.error.reset();
     loggerStub.warn.reset();
     loggerStub.error.reset();      
@@ -389,9 +390,9 @@ describe('rhinozug module', () => {
         }, done);
       });
         
-      it('should run Umzug.up on any unexecuted seed files', () => {
-        sut.seed();
-        expect(up.called).to.be.true;
+      it('should run Umzug.up with the specified file', () => {
+        sut.seed('file');
+        expect(up.calledWith('file')).to.be.true;
       });
 
     });
@@ -429,9 +430,9 @@ describe('rhinozug module', () => {
         }, done);
       });
 
-      it('should run down the last migration that was run up', (done) => {
-        promiseHelp.testAfterPromise(sut.unseed(), () => {
-          expect(down.called).to.be.true;
+      it('should run Umzug.down with the specified file', (done) => {
+        promiseHelp.testAfterPromise(sut.unseed('file'), () => {
+          expect(down.calledWith('file')).to.be.true;
         }, done);
       });
     

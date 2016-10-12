@@ -22,7 +22,7 @@
     "mysql": "^2.10.2",
     "prompt": "^1.0.0",
     "redefine": "^0.2.1",
-    "rhinozug": "^1.0.0",
+    "rhinozug": "file:../rhinozug",
     "umzug": "^1.11.0"
   },
   "devDependencies": {

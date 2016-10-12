@@ -5,8 +5,9 @@
 import Umzug from 'umzug';
 import commander from 'commander';
 import prompt from 'prompt';
-import * as rz from './rhinozug';
+import * as rz from 'rhinozug';
 
+console.log(rz);
 
 let umzug = new Umzug({storage: 'json'});
 
@@ -33,7 +34,7 @@ commander.command('down')
     rz.down(command.to, command.connection);
   });
 
-commander.command('list')
+commander.command('list:m')
   .description('list all migrations')
   .option('-p, --pending <pend>', 'list only pending migrations')
   .option('-e, --executed <exec>', 'list only executed migrations')
@@ -47,6 +48,21 @@ commander.command('list')
       rz.listAll(command.connection);
     }
   });
+
+commander.command('list:s')
+  .description('list all seeds')
+  .option('-p, --pending <pend>', 'list only unapplied seeds')
+  .option('-e, --executed <exec>', 'list only applied seeds')
+  .option('-c, --connection <conn>')
+  .action((command) => {
+    if (command.pending) {
+      rz.listPendingSeeds(command.connection);
+    } else if (command.executed) {
+      rz.listExecutedSeeds(command.connection);
+    } else {
+      rz.listAllSeeds(command.connection);
+    }
+  })
 
 commander.command('conns')
   .description('list all available connections for use with the -c option in other commands')
@@ -153,17 +169,19 @@ commander.command('create:model [name] [tableName]')
   .action(rz.createModel);
 
 commander.command('seed')
-  .description('run all seed files in alphabetical order')
+  .description('run a seed file')
   .option('-c, --connection <conn>')
+  .option('-f, --file <file>')
   .action((command) => {
-    rz.seed(command.connection);
+    rz.seed(command.file, command.connection);
   });
 
 commander.command('unseed')
-  .description('unseed the latest seed file')
+  .description('unseed a file')
   .option('-c, --connection <conn>')
+  .option('-f, --file <file>')
   .action((command) => {
-    rz.unseed(command.connection);
+    rz.unseed(command.file, command.connection);
   });
 
 commander.command('init')
