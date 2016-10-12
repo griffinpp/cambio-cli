@@ -9,7 +9,7 @@ import * as rz from 'rhinozug';
 
 let umzug = new Umzug({storage: 'json'});
 
-commander.version('0.0.1');
+commander.version('0.1.4');
 commander.command('create:migration [value]')
   .description('create a new migration file, using an optional name and a timestamp. "unnamed" is used if no name is provided.')
   .action((command) => {
