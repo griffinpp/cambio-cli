@@ -98,19 +98,27 @@ Create a new seed with:
 
 The seed name is optional.  The seed template at `config/seed.template` will be copied into the `seeds` directory with a timestamp in the filename.
 
+### Listing seeds
+
+Show the current status of all seeds with:
+
+    rz list:s
+
+This will show a list of all unapplied seeds, followed by all applied seeds, on the default connection (see "specifying connections" below, for more information about connections).
+
 ### Running seeds
 
 Run a seed with:
 
-    rz seed -f <seed filename>
+    rz seed -f <seedName>
 
-This will run the "up" portion of all seeds, in chronological order, against the default connection (see "specifying connections" below, for more information about connections).
+This will run the specified seed file against the default connection (see "specifying connections" below, for more information about connections).
 
-Undo, or "run down" the most recent seed with:
+Undo, or "run down" an applied seed with:
 
-    rz unseed
+    rz unseed -f <seedName>
 
-While most seeds will not have a "down" portion, as this is generally time consuming to write, and not usually needed, if the most recently run seed has a "down" portion, this will run it against the default connection (see "specifying connections" below, for more information about connections).
+While most seeds will not have a "down" portion, as this is generally time consuming to write, and not usually needed, if the specified seed has a "down" portion, this will run it against the default connection (see "specifying connections" below, for more information about connections).
 
 ### Tracking seeds
 
