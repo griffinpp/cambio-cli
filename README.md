@@ -3,9 +3,7 @@ Rhinogram's internal database migration tool CLI
 
 ## Installing
 
-Until released on NPM, pull down the repository, `cd` to the folder that you copied the repository to, and install with:
-
-    npm install -g
+    npm install -g rhinozug-cli
 
 ## Running commands
 
@@ -28,7 +26,7 @@ Once installed, you can initialize Rhinozug into any (preferably empty) folder i
 
     rz init
 
-This will create necessary directories and files in your project.  Once initialized, you can run Rhinozug commands from anywhere in your project's directory tree, and Rhinozug will automatically find the folder it was initialized into.
+This will create necessary directories and files in your project.  Once initialized, you can run Rhinozug commands from anywhere in your project's directory tree, and Rhinozug will automatically find the folder it was initialized into.  Be sure there is a `package.json` file in your project's folder tree before running `rz init`.
 
 ## Migrations
 
@@ -52,7 +50,7 @@ When you write your migration, you must write an "up" and a "down" portion of th
 
 Show the current status of all migrations with:
 
-    rz list
+    rz list:m
 
 This will show a list of all pending migrations, in order, followed by all executed migrations, in order, on the default connection (see "specifying connections" below, for more information about connections).
 
@@ -102,9 +100,9 @@ The seed name is optional.  The seed template at `config/seed.template` will be 
 
 ### Running seeds
 
-Run all seeds up to the most recent one with:
+Run a seed with:
 
-    rz seed
+    rz seed -f <seed filename>
 
 This will run the "up" portion of all seeds, in chronological order, against the default connection (see "specifying connections" below, for more information about connections).
 
