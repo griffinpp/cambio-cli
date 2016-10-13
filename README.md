@@ -3,9 +3,7 @@ Rhinogram's internal database migration tool CLI
 
 ## Installing
 
-Until released on NPM, pull down the repository, `cd` to the folder that you copied the repository to, and install with:
-
-    npm install -g
+    npm install -g rhinozug-cli
 
 ## Running commands
 
@@ -28,7 +26,7 @@ Once installed, you can initialize Rhinozug into any (preferably empty) folder i
 
     rz init
 
-This will create necessary directories and files in your project.  Once initialized, you can run Rhinozug commands from anywhere in your project's directory tree, and Rhinozug will automatically find the folder it was initialized into.
+This will create necessary directories and files in your project.  Once initialized, you can run Rhinozug commands from anywhere in your project's directory tree, and Rhinozug will automatically find the folder it was initialized into.  Be sure there is a `package.json` file in your project's folder tree before running `rz init`.
 
 ## Migrations
 
@@ -52,7 +50,7 @@ When you write your migration, you must write an "up" and a "down" portion of th
 
 Show the current status of all migrations with:
 
-    rz list
+    rz list:m
 
 This will show a list of all pending migrations, in order, followed by all executed migrations, in order, on the default connection (see "specifying connections" below, for more information about connections).
 
@@ -100,19 +98,27 @@ Create a new seed with:
 
 The seed name is optional.  The seed template at `config/seed.template` will be copied into the `seeds` directory with a timestamp in the filename.
 
+### Listing seeds
+
+Show the current status of all seeds with:
+
+    rz list:s
+
+This will show a list of all unapplied seeds, followed by all applied seeds, on the default connection (see "specifying connections" below, for more information about connections).
+
 ### Running seeds
 
-Run all seeds up to the most recent one with:
+Run a seed with:
 
-    rz seed
+    rz seed -f <seedName>
 
-This will run the "up" portion of all seeds, in chronological order, against the default connection (see "specifying connections" below, for more information about connections).
+This will run the specified seed file against the default connection (see "specifying connections" below, for more information about connections).
 
-Undo, or "run down" the most recent seed with:
+Undo, or "run down" an applied seed with:
 
-    rz unseed
+    rz unseed -f <seedName>
 
-While most seeds will not have a "down" portion, as this is generally time consuming to write, and not usually needed, if the most recently run seed has a "down" portion, this will run it against the default connection (see "specifying connections" below, for more information about connections).
+While most seeds will not have a "down" portion, as this is generally time consuming to write, and not usually needed, if the specified seed has a "down" portion, this will run it against the default connection (see "specifying connections" below, for more information about connections).
 
 ### Tracking seeds
 
