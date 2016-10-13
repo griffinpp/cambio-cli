@@ -124,6 +124,16 @@ While most seeds will not have a "down" portion, as this is generally time consu
 
 Seeds are tracked in the same way as migrations, except in a table named `rzSeeds`.  In this way, every database is aware of its own status.
 
+## Rebuilding the Database
+
+Often, especially during development and testing, it is necessary to reset the database to a base state.  While unseeding can sometimes accomplish what is needed, due to the (potentially) constantly changing nature of the schema it may not be reliable.  A rebuild is a guaranteed way to reset the database, regardless of what data is in it.  A rebuild will drop the database, recreate it, then run all migrations on the recreated database. 
+
+Rebuild with:
+
+    rz rebuild
+    
+This will run a rebuild against the default connection (see "specifying connections" below, for more information about connections).
+
 ## Creating new connections for use
 
 Connections are simply `.js` files in the `config` folder that export knex connection objects.  `default.js` is provided upon initialization and is used when no connection information is provided to a command.  New connections can be created manually by creating new files that export knex connection objects, but it is generally simpler to use Rhinozug to automatically generate a new connection for you.  Start generating a new connection with:
@@ -157,7 +167,7 @@ To use something other than the default connection, use the `-c` option with a c
 
 If you are not sure what connections are available, you can list all available connections with:
 
-    rz conns
+    rz list:c
 
 The following commands support the `-c` option:
 
@@ -165,7 +175,9 @@ The following commands support the `-c` option:
     down
     seed
     unseed
-    list
+    list:m
+    list:s
+    rebuild
 
 ## Models
 
