@@ -2,14 +2,11 @@
 
 'use strict';
 
-import Umzug from 'umzug';
 import commander from 'commander';
 import prompt from 'prompt';
 import * as rz from 'rhinozug';
 
-let umzug = new Umzug({storage: 'json'});
-
-commander.version('0.1.4');
+commander.version('0.1.5');
 commander.command('create:migration [value]')
   .description('create a new migration file, using an optional name and a timestamp. "unnamed" is used if no name is provided.')
   .action((command) => {
@@ -62,7 +59,7 @@ commander.command('list:s')
     }
   })
 
-commander.command('conns')
+commander.command('list:c')
   .description('list all available connections for use with the -c option in other commands')
   .action((command) => {
     rz.listConnections();
@@ -180,6 +177,13 @@ commander.command('unseed')
   .option('-f, --file <file>')
   .action((command) => {
     rz.unseed(command.file, command.connection);
+  });
+
+commander.command('rebuild')
+  .description('rebuild the database from scratch')
+  .option('-c, --connection <conn>')
+  .action((command) => {
+    rz.rebuildDb(command.connection);
   });
 
 commander.command('init')
