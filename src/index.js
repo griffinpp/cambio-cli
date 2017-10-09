@@ -6,7 +6,7 @@ import commander from 'commander';
 import prompt from 'prompt';
 import * as rz from 'rhinozug';
 
-commander.version('0.1.5');
+commander.version('0.1.7');
 commander.command('create:migration [value]')
   .description('create a new migration file, using an optional name and a timestamp. "unnamed" is used if no name is provided.')
   .action((command) => {
