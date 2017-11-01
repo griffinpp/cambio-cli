@@ -1,22 +1,22 @@
 {
-  "name": "rhinozug-cli",
-  "version": "0.1.7",
-  "description": "Rhinogram's database migration CLI",
+  "name": "cambio-cli",
+  "version": "0.1.0",
+  "description": "Cambio's database migration CLI",
   "preferGlobal": "true",
   "scripts": {
     "test": "rm -Rf lib && babel src -d lib --copy-files && mocha lib/tests",
     "build": "rm -Rf lib && babel src -d lib --copy-files"
   },
-  "author": "Rhinogram",
+  "author": "Paul Griffin",
   "license": "ISC",
   "bin": {
-    "rhinozug": "./lib/index.js",
-    "rz": "./lib/index.js"
+    "cambio": "./lib/index.js",
+    "co": "./lib/index.js"
   },
   "dependencies": {
     "commander": "^2.9.0",
     "prompt": "^1.0.0",
-    "rhinozug": "^1.1.1"
+    "cambio": "0.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",
