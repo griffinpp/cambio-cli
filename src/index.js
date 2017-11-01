@@ -4,13 +4,13 @@
 
 import commander from 'commander';
 import prompt from 'prompt';
-import * as rz from 'rhinozug';
+import * as co from 'cambio';
 
 commander.version('0.1.7');
 commander.command('create:migration [value]')
   .description('create a new migration file, using an optional name and a timestamp. "unnamed" is used if no name is provided.')
   .action((command) => {
-    rz.createMigration(command);
+    co.createMigration(command);
   });
 
 commander.command('up')
@@ -18,7 +18,7 @@ commander.command('up')
   .option('-c, --connection <conn>')
   .option('-t, --to <to>')
   .action((command) => {
-    rz.up(command.to, command.connection);
+    co.up(command.to, command.connection);
   });
 
 commander.command('down')
@@ -26,7 +26,7 @@ commander.command('down')
   .option('-c, --connection <conn>')
   .option('-t, --to <to>')
   .action((command) => {
-    rz.down(command.to, command.connection);
+    co.down(command.to, command.connection);
   });
 
 commander.command('list:m')
@@ -36,11 +36,11 @@ commander.command('list:m')
   .option('-c, --connection <conn>')
   .action((command) => {
     if (command.pending) {
-      rz.listPending(command.connection);
+      co.listPending(command.connection);
     } else if (command.executed) {
-      rz.listExecuted(command.connection);
+      co.listExecuted(command.connection);
     } else {
-      rz.listAll(command.connection);
+      co.listAll(command.connection);
     }
   });
 
@@ -51,18 +51,18 @@ commander.command('list:s')
   .option('-c, --connection <conn>')
   .action((command) => {
     if (command.pending) {
-      rz.listPendingSeeds(command.connection);
+      co.listPendingSeeds(command.connection);
     } else if (command.executed) {
-      rz.listExecutedSeeds(command.connection);
+      co.listExecutedSeeds(command.connection);
     } else {
-      rz.listAllSeeds(command.connection);
+      co.listAllSeeds(command.connection);
     }
   })
 
 commander.command('list:c')
   .description('list all available connections for use with the -c option in other commands')
   .action((command) => {
-    rz.listConnections();
+    co.listConnections();
   });
 
 commander.command('create:conn')
@@ -149,26 +149,26 @@ commander.command('create:conn')
       required: false
     }
     ], (err, result) => {
-      rz.createConn(result);
+      co.createConn(result);
     });
   });
 
 commander.command('create:seed [value]')
   .description('create a new seed file, using an optional name and a timestamp.  "unnamed" is used if no name is provided')
   .action((command) => {
-    rz.createSeed(command);
+    co.createSeed(command);
   });
 
 commander.command('create:model [name] [tableName]')
   .description('create a new model file, with a name for the object, and the name of the table that it maps.')
-  .action(rz.createModel);
+  .action(co.createModel);
 
 commander.command('seed')
   .description('run a seed file')
   .option('-c, --connection <conn>')
   .option('-f, --file <file>')
   .action((command) => {
-    rz.seed(command.file, command.connection);
+    co.seed(command.file, command.connection);
   });
 
 commander.command('unseed')
@@ -176,20 +176,20 @@ commander.command('unseed')
   .option('-c, --connection <conn>')
   .option('-f, --file <file>')
   .action((command) => {
-    rz.unseed(command.file, command.connection);
+    co.unseed(command.file, command.connection);
   });
 
 commander.command('rebuild')
   .description('rebuild the database from scratch')
   .option('-c, --connection <conn>')
   .action((command) => {
-    rz.rebuildDb(command.connection);
+    co.rebuildDb(command.connection);
   });
 
 commander.command('init')
   .description('set up files and folders needed to track migrations and seeds in a project')
   .action(() => {
-    rz.init();
+    co.init();
   });
 
 commander.parse(process.argv);
